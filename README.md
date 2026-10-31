@@ -61,6 +61,22 @@ Podman from Oracle Linux 9 AppStream; lingering for the `deploy` user so its ser
 cgroup v2 delegation so rootless containers can have memory and pid limits; the Quadlet unit
 validated with `quadlet -dryrun` before first use; nginx on port 8086 with SELinux and firewalld rules.
 
+## Results
+
+![Lab 4 pipeline handing its digest to this deploy](docs/chain.png)
+
+| Build | Trigger | Outcome |
+|:--|:--|:--|
+| #3 | Manual, Lab 4 digest | First deploy: `none → 00004`, rootless container healthy |
+| #4 | Manual, `docker.io/library/nginx@sha256:…` | **Refused**: only this registry's `ci-labs/flask-api@sha256:` is accepted |
+| #5 | **Lab 4 build #7** (one `git push`) | Built, tested, scanned, pushed and deployed `00007`; Lab 4 waited for the verdict |
+| #6 | Manual, `ACTION=rollback` | Server picked the previous healthy release, re-pulled it by digest: `00007 → 00004` |
+
+Verified on the running container: UID 10001 inside, an unprivileged UID 175536 on the host,
+read-only root filesystem, all capabilities dropped, 256 MB memory and 128-process limits (about 57 MB in use).
+
+![Deploy history](docs/pipeline.png)
+
 ## Licence
 
 MIT
