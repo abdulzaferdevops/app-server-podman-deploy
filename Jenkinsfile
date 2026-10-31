@@ -91,7 +91,7 @@ pipeline {
             sh '''
               # The token travels on stdin into a temporary auth file that is deleted after the pull
               printf '%s' "$OCIR_TOKEN" | ssh $SSH_OPTS deploy@$APP_HOST \
-                "umask 077; A=\\$(mktemp); trap 'rm -f \\$A' EXIT; podman login --authfile \\$A -u '$OCIR_USER' --password-stdin $OCIR_HOST >/dev/null && podman pull --quiet --authfile \\$A '$TARGET_IMAGE' >/dev/null && echo 'pulled: $TARGET_IMAGE (temporary login removed)'"
+                "umask 077; D=\\$(mktemp -d); A=\\$D/auth.json; trap 'rm -rf \\$D' EXIT; podman login --authfile \\$A -u '$OCIR_USER' --password-stdin $OCIR_HOST >/dev/null && podman pull --quiet --authfile \\$A '$TARGET_IMAGE' >/dev/null && echo 'pulled: $TARGET_IMAGE (temporary login removed)'"
             '''
           }
         }
