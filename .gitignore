@@ -1,0 +1,14 @@
+# Pipeline output
+smoke.json
+
+# Never commit keys, secrets or environment files
+*.pem
+*.key
+id_*
+jenkins-deploy
+jenkins-deploy.pub
+ci-lab
+ci-lab.pub
+.env
+*.token
+auth.json
